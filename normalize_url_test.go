@@ -15,7 +15,27 @@ func TestNormalizeURL(t *testing.T) {
 			inputURL: "http://blog.boot.dev/path",
 			expected: "blog.boot.dev/path",
 		},
-		// Add more test cases as needed
+		{
+			name:     "remove trailing slash",
+			inputURL: "https://blog.boot.dev/path/",
+			expected: "blog.boot.dev/path",
+		},
+		// {
+		// 	name:     "lowercase capital letters",
+		// 	inputURL: "https://BLOG.boot.dev/PATH",
+		// 	expected: "blog.boot.dev/path",
+		// },
+		// {
+		// 	name:     "remove scheme and capitals and trailing slash",
+		// 	inputURL: "http://BLOG.boot.dev/path/",
+		// 	expected: "blog.boot.dev/path",
+		// },
+		// {
+		// 	name:          "handle invalid URL",
+		// 	inputURL:      `:\\invalidURL`,
+		// 	expected:      "",
+		// 	errorContains: "couldn't parse URL",
+		// },
 	}
 
 	for i, tc := range tests {
