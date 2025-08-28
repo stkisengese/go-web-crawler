@@ -65,6 +65,32 @@ func TestGetURLFromHTML(t *testing.T) {
 				"https://example.com/valid",
 			},
 		},
+		{
+			name:     "no href",
+			inputURL: "https://blog.boot.dev",
+			inputBody: `
+<html>
+	<body>
+		<a>
+			<span>Boot.dev></span>
+		</a>
+	</body>
+</html>
+`,
+			expected: nil,
+		},
+		{
+			name:     "bad HTML",
+			inputURL: "https://blog.boot.dev",
+			inputBody: `
+<html body>
+	<a href="path/one">
+		<span>Boot.dev></span>
+	</a>
+</html body>
+`,
+			expected: []string{"https://blog.boot.dev/path/one"},
+		},
 	}
 
 	for _, tc := range tests {
