@@ -19,7 +19,7 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	// Parse the base URL link for solving relative URLs
 	base, err := url.Parse(rawBaseURL)
 	if err != nil {
-		return nil, fmt.Errorf("invalid base URL: %w, err")
+		return nil, fmt.Errorf("invalid base URL: %w", err)
 	}
 
 	// Traverse the HTML node tree and extract URLs
@@ -49,7 +49,8 @@ func traverse(node *html.Node, base *url.URL) []string {
 
 	// Recursively traverse child nodes
 	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		traverse(child, base)
+		childURLs := traverse(child, base)
+		urls = append(urls, childURLs...)
 	}
 	return urls
 }
