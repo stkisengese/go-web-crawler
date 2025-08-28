@@ -32,6 +32,39 @@ func TestGetURLFromHTML(t *testing.T) {
 				"https://other.com/path/one",
 			},
 		},
+		{
+			name:     "nested links",
+			inputURL: "https://example.com",
+			inputBody: `
+<html>
+	<body>
+		<div>
+			<a href="/foo"></a>
+			<span><a href="/bar"></a></span>
+		</div>
+	</body>
+</html>
+`,
+			expected: []string{
+				"https://example.com/foo",
+				"https://example.com/bar",
+			},
+		},
+		{
+			name:     "ignore invalid URLs",
+			inputURL: "https://example.com",
+			inputBody: `
+<html>
+	<body>
+		<a href="::::"></a>
+		<a href="/valid"></a>
+	</body>
+</html>
+`,
+			expected: []string{
+				"https://example.com/valid",
+			},
+		},
 	}
 
 	for _, tc := range tests {
