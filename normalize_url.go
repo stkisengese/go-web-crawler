@@ -14,7 +14,7 @@ func normalizeURL(rawURL string) (string, error) {
 	host := parsed.Hostname()
 	path := strings.TrimSuffix(parsed.EscapedPath(), "/")
 	if path == "" {
-		return host, nil
+		return strings.ToLower(host), nil
 	}
 	return strings.ToLower(host + path), nil
 }
