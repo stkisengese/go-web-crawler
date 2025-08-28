@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/html"
 )
 
+// GetURLsFromHTML extracts and returns all URLs from the provided HTML body.
 func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	// Parse the html body into a string
 	doc, err := html.Parse(strings.NewReader(htmlBody))
@@ -20,16 +21,25 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid base URL: %w, err")
 	}
+
+	// Traverse the HTML node tree and extract URLs
 	return traverse(doc, base), nil
 }
 
+// Helper function to traverse the HTML node tree
 func traverse(node *html.Node, base *url.URL) []string {
 	var urls []string
+
+	// Traverse the HTML node tree to find anchor tags
 	if node.Type == html.ElementNode && node.Data == "a" {
 		for _, attr := range node.Attr {
 			if attr.Key == "href" {
+
+				// Parse the href value
 				link, err := url.Parse(attr.Val)
 				if err == nil {
+
+					// Resolve relative URLs
 					absLink := base.ResolveReference(link)
 					urls = append(urls, absLink.String())
 				}
@@ -37,6 +47,7 @@ func traverse(node *html.Node, base *url.URL) []string {
 		}
 	}
 
+	// Recursively traverse child nodes
 	for child := node.FirstChild; child != nil; child = child.NextSibling {
 		traverse(child, base)
 	}
