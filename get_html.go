@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func getHTML(rawURL string) (string, error) {
@@ -17,6 +18,12 @@ func getHTML(rawURL string) (string, error) {
 	// Check for non-200 status codes
 	if res.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("request faild with status code: %d %s", res.StatusCode, res.Status)
+	}
+
+	// Check that the Content-Type is text/html
+	contentType := res.Header.Get("Content-Type")
+	if !strings.Contains(contentType, "text/html") {
+		return "", fmt.Errorf("expected content type 'text/html', got: %s", contentType)
 	}
 
 	// Read the response body
