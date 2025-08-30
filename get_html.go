@@ -16,8 +16,8 @@ func getHTML(rawURL string) (string, error) {
 	defer res.Body.Close()
 
 	// Check for non-200 status codes
-	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("request faild with status code: %d %s", res.StatusCode, res.Status)
+	if res.StatusCode > 399 {
+		return "", fmt.Errorf("request failed with status code: %d %s", res.StatusCode, res.Status)
 	}
 
 	// Check that the Content-Type is text/html
