@@ -32,8 +32,15 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 
 	// Mark this page as visited
 	pages[normURL] = 1
-	
+	fmt.Printf("Crawling: %s\n", rawCurrentURL)
+
 	// Fetch the HTML of the page
+	htmlBody, err := getHTML(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("Error getting HTML from %s: %v\n", rawCurrentURL, err)
+		return
+	}
+
 	// Extract all the links from the HTML
 	// Recursively crawl each of the links
 }
