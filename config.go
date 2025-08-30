@@ -12,6 +12,7 @@ type config struct {
 	mu                 *sync.Mutex     // Mutex for thread-safe map access
 	concurrencyControl chan struct{}   // Buffered channel to control max goroutines
 	wg                 *sync.WaitGroup // WaitGroup to wait for all goroutines to finish
+	maxPages           int             // Optional limit on number of pages to crawl
 }
 
 // AddPageVisit safely adds or updates the visit count for a normalized
@@ -27,4 +28,11 @@ func (cfg *config) addPageVisit(normURL string) (isFirstVisit bool) {
 
 	cfg.pages[normURL] = 1
 	return true // First visit
+}
+
+// GetPageCount safety returns the current number of pages crawled
+func (cfg *config) getPageCount() int {
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	return len(cfg.pages)
 }
