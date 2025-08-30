@@ -62,12 +62,7 @@ func main() {
 
 	// Wait for all goroutines to complete
 	cfg.wg.Wait()
-	// Print results
-	fmt.Println("===================================")
-	fmt.Printf("Crawl complete! Found %d unique pages:\n", len(cfg.pages))
-	fmt.Println("===================================")
 
-	for url, count := range cfg.pages {
-		fmt.Printf("%d: %s\n", count, url)
-	}
+	// Print results
+	printReport(cfg.pages, rawBaseURL)
 }
