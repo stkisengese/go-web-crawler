@@ -42,5 +42,10 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 
 	// Extract all the links from the HTML
+	urls, err := getURLsFromHTML(htmlBody, rawBaseURL)
+	if err != nil {
+		fmt.Printf("Error extracting URLS from %s: %v\n", rawCurrentURL, err)
+	}
+
 	// Recursively crawl each of the links
 }
