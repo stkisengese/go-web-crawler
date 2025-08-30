@@ -48,4 +48,7 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 
 	// Recursively crawl each of the links
+	for _, foundURL := range urls {
+		crawlPage(rawBaseURL, foundURL, pages)
+	}
 }
