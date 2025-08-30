@@ -9,15 +9,19 @@ import (
 // rawBaseURL: the root domain we're crawling (stays constant)
 // rawCurrentURL: the current page we're crawling (changes with each recursive call)
 // pages: map to track how many times we've seen each normalized URL
-func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
+func (cfg *config) crawlPage(rawCurrentURL string) {
+	// Acquire a slot in the concurrency control channel
+	cfg.concurrencyControl <- struct{}{}
+	defer func() {
+		<-cfg.concurrencyControl // Release the slot when done
+		cfg.wg.Done()            // Mark this goroutine as done when it exits
+	}()
+
 	// Check URL is on the same domain as the base URL
-	if baseURL, err := url.Parse(rawBaseURL); err != nil {
-		fmt.Printf("error parsing base URL %s: %v\n", baseURL, err)
-		return
-	} else if currentURL, err := url.Parse(rawCurrentURL); err != nil {
+	if currentURL, err := url.Parse(rawCurrentURL); err != nil {
 		fmt.Printf("error parsing current URL %s: %v\n", currentURL, err)
 		return
-	} else if baseURL.Host != currentURL.Host {
+	} else if cfg.baseURL.Host != currentURL.Host {
 		return
 	}
 
@@ -29,13 +33,10 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 
 	// Check if we've already visited this page
-	if count, exists := pages[normURL]; exists {
-		pages[normURL] = count + 1
-		return
+	isFirstVisit := cfg.addPageVisit(normURL)
+	if !isFirstVisit {
+		return // Already visited, no need to crawl again
 	}
-
-	// Mark this page as visited
-	pages[normURL] = 1
 	fmt.Printf("Crawling: %s\n", rawCurrentURL)
 
 	// Fetch the HTML of the page
@@ -46,13 +47,14 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 
 	// Extract all the links from the HTML
-	urls, err := getURLsFromHTML(htmlBody, rawBaseURL)
+	urls, err := getURLsFromHTML(htmlBody, cfg.baseURL.String())
 	if err != nil {
 		fmt.Printf("Error extracting URLS from %s: %v\n", rawCurrentURL, err)
 	}
 
 	// Recursively crawl each of the links
 	for _, foundURL := range urls {
-		crawlPage(rawBaseURL, foundURL, pages)
+		cfg.wg.Add(1)
+		go cfg.crawlPage(foundURL)
 	}
 }
