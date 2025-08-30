@@ -17,6 +17,11 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 		cfg.wg.Done()            // Mark this goroutine as done when it exits
 	}()
 
+	// Check if we've reached the max number of pages
+	if cfg.getPageCount() >= cfg.maxPages {
+		return
+	}
+
 	// Check URL is on the same domain as the base URL
 	if currentURL, err := url.Parse(rawCurrentURL); err != nil {
 		fmt.Printf("error parsing current URL %s: %v\n", currentURL, err)
@@ -50,10 +55,15 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	urls, err := getURLsFromHTML(htmlBody, cfg.baseURL.String())
 	if err != nil {
 		fmt.Printf("Error extracting URLS from %s: %v\n", rawCurrentURL, err)
+		return
 	}
 
 	// Recursively crawl each of the links
 	for _, foundURL := range urls {
+		// Check maxPages reached before spawning new goroutines
+		if cfg.getPageCount() >= cfg.maxPages {
+			break
+		}
 		cfg.wg.Add(1)
 		go cfg.crawlPage(foundURL)
 	}
