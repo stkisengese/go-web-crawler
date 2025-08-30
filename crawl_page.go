@@ -5,6 +5,10 @@ import (
 	"net/url"
 )
 
+// CrawlPage recursively crawls a website starting from the raw currentURL
+// rawBaseURL: the root domain we're crawling (stays constant)
+// rawCurrentURL: the current page we're crawling (changes with each recursive call)
+// pages: map to track how many times we've seen each normalized URL
 func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	// Check URL is on the same domain as the base URL
 	if baseURL, err := url.Parse(rawBaseURL); err != nil {
