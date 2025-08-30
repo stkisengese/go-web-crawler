@@ -17,8 +17,22 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		return
 	}
 
+	// Get normalize version of the current URL
+	normURL, err := normalizeURL(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("error normalizing URL %s: %v\n", rawCurrentURL, err)
+		return
+	}
+
 	// Check if we've already visited this page
+	if count, exists := pages[normURL]; exists {
+		pages[normURL] = count + 1
+		return
+	}
+
 	// Mark this page as visited
+	pages[normURL] = 1
+	
 	// Fetch the HTML of the page
 	// Extract all the links from the HTML
 	// Recursively crawl each of the links
