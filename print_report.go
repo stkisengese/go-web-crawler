@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // Page represents a page with its normalized URL and link count
 type Page struct {
@@ -22,4 +25,29 @@ func printReport(pages map[string]int, baseURL string) {
 	for _, page := range sortedPages {
 		fmt.Printf("Found %d internal links to %s\n", page.Count, page.URL)
 	}
+}
+
+// sortPages converts the map to a sorted slice
+// Sorted by count (highest first), then alphabetically by URL for ties
+func sortPages(pages map[string]int) []Page {
+	// Convert map to slice of Page structs
+	pageSlice := make([]Page, 0, len(pages))
+	for url, count := range pages {
+		pageSlice = append(pageSlice, Page{
+			URL:   url,
+			Count: count,
+		})
+	}
+
+	// Sort the slice
+	sort.Slice(pageSlice, func(i, j int) bool {
+		// If counts are different, sort by count (highest first)
+		if pageSlice[i].Count != pageSlice[j].Count {
+			return pageSlice[i].Count > pageSlice[j].Count
+		}
+		// If counts are the same, sort alphabetically by URL
+		return pageSlice[i].URL < pageSlice[j].URL
+	})
+
+	return pageSlice
 }
