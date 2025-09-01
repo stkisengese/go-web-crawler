@@ -15,3 +15,14 @@ func extractDomain(url string) string {
 	}
 	return url
 }
+
+// CalculateURLDepth check the number of nested pages on the domain
+func calculateURLDepth(url string) int {
+	var depth = 0
+	for _, char := range url {
+		if char == '/' {
+			depth++
+		}
+	}
+	return depth
+}
