@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"encoding/csv"
+	"os"
+	"testing"
+)
 
 func TestExtractDomain(t *testing.T) {
 	tests := []struct {
@@ -123,5 +127,60 @@ func TestDeterminePageType(t *testing.T) {
 				t.Errorf("Expected %s, got %s", tc.expected, actual)
 			}
 		})
+	}
+}
+
+func TestExportToCSV(t *testing.T) {
+	// Create test data
+	pages := map[string]int{
+		"example.com":         5,
+		"example.com/about":   3,
+		"example.com/contact": 1,
+	}
+
+	filename := "test_output.csv"
+	baseURL := "https://example.com"
+
+	// Clean up test file
+	defer os.Remove(filename)
+
+	// Test CSV export
+	err := exportToCSV(pages, baseURL, filename)
+	if err != nil {
+		t.Fatalf("Failed to export CSV: %v", err)
+	}
+
+	// Verify file was created
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		t.Fatalf("CSV file was not created")
+	}
+
+	// Read and verify CSV content
+	file, err := os.Open(filename)
+	if err != nil {
+		t.Fatalf("Failed to open CSV file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		t.Fatalf("Failed to read CSV records: %v", err)
+	}
+
+	// Check header
+	if len(records) < 1 {
+		t.Fatalf("CSV should have at least a header row")
+	}
+
+	header := records[0]
+	expectedHeader := []string{"URL", "Internal_Link_Count", "Domain", "Base_URL", "Crawl_Timestamp"}
+	if len(header) != len(expectedHeader) {
+		t.Errorf("Header length mismatch: expected %d, got %d", len(expectedHeader), len(header))
+	}
+
+	// Verify we have data rows (header + data)
+	if len(records) != len(pages)+1 {
+		t.Errorf("Expected %d total records (header + data), got %d", len(pages)+1, len(records))
 	}
 }
