@@ -77,3 +77,51 @@ func TestCalculateURLDepth(t *testing.T) {
 		})
 	}
 }
+
+func TestDeterminePageType(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "homepage",
+			input:    "example.com",
+			expected: "Homepage",
+		},
+		{
+			name:     "blog page",
+			input:    "example.com/blog/my-post",
+			expected: "Blog",
+		},
+		{
+			name:     "about page",
+			input:    "example.com/about",
+			expected: "About",
+		},
+		{
+			name:     "contact page",
+			input:    "example.com/contact-us",
+			expected: "Contact",
+		},
+		{
+			name:     "product page",
+			input:    "example.com/product/widget",
+			expected: "Product",
+		},
+		{
+			name:     "generic content",
+			input:    "example.com/random-page",
+			expected: "Content",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := determinePageType(tc.input)
+			if actual != tc.expected {
+				t.Errorf("Expected %s, got %s", tc.expected, actual)
+			}
+		})
+	}
+}
