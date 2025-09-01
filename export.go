@@ -27,3 +27,33 @@ func calculateURLDepth(url string) int {
 	}
 	return depth
 }
+
+// Helper function to determine page type based on URL patterns
+func determinePageType(url string) string {
+	if url == extractDomain(url) {
+		return "Homepage"
+	}
+
+	// Check for common page types
+	pageTypeMappings := map[string]string{
+		"/blog":     "Blog",
+		"/post":     "Blog",
+		"/about":    "About",
+		"/contact":  "Contact",
+		"/product":  "Product",
+		"/item":     "Product",
+		"/category": "Category",
+		"/cat":      "Category",
+		"/news":     "News",
+		"/service":  "Service",
+		"/help":     "Support",
+		"/support":  "Support",
+	}
+
+	for path, pageType := range pageTypeMappings {
+		if strings.Contains(url, path) {
+			return pageType
+		}
+	}
+	return "Content"
+}
