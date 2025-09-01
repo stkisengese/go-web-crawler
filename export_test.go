@@ -39,3 +39,41 @@ func TestExtractDomain(t *testing.T) {
 		})
 	}
 }
+
+func TestCalculateURLDepth(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected int
+	}{
+		{
+			name:     "homepage",
+			input:    "example.com",
+			expected: 0,
+		},
+		{
+			name:     "one level deep",
+			input:    "example.com/about",
+			expected: 1,
+		},
+		{
+			name:     "two levels deep",
+			input:    "example.com/blog/post",
+			expected: 2,
+		},
+		{
+			name:     "three levels deep",
+			input:    "example.com/category/tech/golang",
+			expected: 3,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := calculateURLDepth(tc.input)
+			if actual != tc.expected {
+				t.Errorf("Expected %d, got %d", tc.expected, actual)
+			}
+		})
+	}
+}
