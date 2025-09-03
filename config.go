@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"sync"
 )
@@ -13,6 +14,15 @@ type config struct {
 	concurrencyControl chan struct{}   // Buffered channel to control max goroutines
 	wg                 *sync.WaitGroup // WaitGroup to wait for all goroutines to finish
 	maxPages           int             // Optional limit on number of pages to crawl
+}
+
+// CrawlArgs struct holds arguments for each crawl operation
+type CrawlArgs struct {
+	URL           string // URL to crawl
+	MaxConcurency int    // Maximum concurrency for this crawl
+	MaxPages      int    // Maximum pages for this crawl
+	CSVFile       string // CSV file to save results
+	DetailedCSV   string // Detailed CSV file to save results
 }
 
 // AddPageVisit safely adds or updates the visit count for a normalized
@@ -35,4 +45,24 @@ func (cfg *config) getPageCount() int {
 	cfg.mu.Lock()
 	defer cfg.mu.Unlock()
 	return len(cfg.pages)
+}
+
+// printUsage prints usage information
+func printUsage() {
+	fmt.Println("Usage: ./crawler <URL> <maxConcurrency> <maxPages> [options]")
+	fmt.Println()
+	fmt.Println("Required arguments:")
+	fmt.Println("  URL              Website to crawl (include http:// or https://)")
+	fmt.Println("  maxConcurrency   Maximum number of concurrent requests (1-20)")
+	fmt.Println("  maxPages         Maximum number of pages to crawl")
+	fmt.Println()
+	fmt.Println("Options:")
+	fmt.Println("  --csv FILE              Export results to CSV file")
+	fmt.Println("  --detailed-csv FILE     Export detailed analysis to CSV file")
+	fmt.Println()
+	fmt.Println("Examples:")
+	fmt.Println("  ./crawler https://example.com 5 20")
+	fmt.Println("  ./crawler https://blog.dev 3 10 --csv results.csv")
+	fmt.Println("  ./crawler https://site.com 8 50 --detailed-csv analysis.csv")
+	fmt.Println("  go run . https://example.com 5 20 --csv output.csv --detailed-csv detailed.csv")
 }
