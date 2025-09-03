@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"os"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -18,11 +21,11 @@ type config struct {
 
 // CrawlArgs struct holds arguments for each crawl operation
 type CrawlArgs struct {
-	URL           string // URL to crawl
-	MaxConcurency int    // Maximum concurrency for this crawl
-	MaxPages      int    // Maximum pages for this crawl
-	CSVFile       string // CSV file to save results
-	DetailedCSV   string // Detailed CSV file to save results
+	URL            string // URL to crawl
+	MaxConcurrency int    // Maximum concurrency for this crawl
+	MaxPages       int    // Maximum pages for this crawl
+	CSVFile        string // CSV file to save results
+	DetailedCSV    string // Detailed CSV file to save results
 }
 
 // AddPageVisit safely adds or updates the visit count for a normalized
@@ -65,4 +68,56 @@ func printUsage() {
 	fmt.Println("  ./crawler https://blog.dev 3 10 --csv results.csv")
 	fmt.Println("  ./crawler https://site.com 8 50 --detailed-csv analysis.csv")
 	fmt.Println("  go run . https://example.com 5 20 --csv output.csv --detailed-csv detailed.csv")
+}
+
+// parseArgs parses command line arguments with support for CSV export
+func parseArgs() CrawlArgs {
+	args := os.Args[1:]
+
+	if len(args) < 3 {
+		printUsage()
+		os.Exit(1)
+	}
+
+	// Parse required arguments
+	url := args[0]
+	maxConcurrency, err := strconv.Atoi(args[1])
+	if err != nil || maxConcurrency < 1 {
+		fmt.Printf("Invalid maxConcurrency '%s': must be a positive integer\n", args[1])
+		os.Exit(1)
+	}
+
+	maxPages, err := strconv.Atoi(args[2])
+	if err != nil || maxPages < 1 {
+		fmt.Printf("Invalid maxPages '%s': must be a positive integer\n", args[2])
+		os.Exit(1)
+	}
+
+	result := CrawlArgs{
+		URL:            url,
+		MaxConcurrency: maxConcurrency,
+		MaxPages:       maxPages,
+	}
+
+	// parse optional flags
+	for i := 3; i < len(args); i++ {
+		arg := args[i]
+		switch {
+		case strings.HasPrefix(arg, "--csv="):
+			result.CSVFile = strings.TrimPrefix(arg, "--csv=")
+		case strings.HasPrefix(arg, "--detailed-csv="):
+			result.DetailedCSV = strings.TrimPrefix(arg, "--detailed-csv=")
+		case arg == "--csv" && i+1 < len(args):
+			result.CSVFile = args[i+1]
+			i++
+		case arg == "--detailed-csv" && i+1 < len(args):
+			result.DetailedCSV = args[i+1]
+			i++
+		default:
+			fmt.Printf("Unknown argument: %s\n", arg)
+			printUsage()
+			os.Exit(1)
+		}
+	}
+	return result
 }
