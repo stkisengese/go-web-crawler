@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"encoding/csv"
@@ -9,7 +9,7 @@ import (
 )
 
 // ExportToCSV function exports the crawl result to a CSV file
-func exportToCSV(pages map[string]int, baseURL, filename string) error {
+func ExportToCSV(pages map[string]int, baseURL, filename string) error {
 	// Create or truncate the file
 	file, err := os.Create(filename)
 	if err != nil {
@@ -28,7 +28,7 @@ func exportToCSV(pages map[string]int, baseURL, filename string) error {
 	}
 
 	// sort pages for consistent output
-	sortedPages := sortPages(pages)
+	sortedPages := SortPages(pages)
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 
 	// Write each page's data
@@ -36,7 +36,7 @@ func exportToCSV(pages map[string]int, baseURL, filename string) error {
 		record := []string{
 			page.URL,
 			strconv.Itoa(page.Count),
-			extractDomain(page.URL),
+			ExtractDomain(page.URL),
 			baseURL,
 			timestamp,
 		}
@@ -48,7 +48,7 @@ func exportToCSV(pages map[string]int, baseURL, filename string) error {
 }
 
 // ExportDetailedCSV exports a detailed analysis of the crawled pages to a CSV file
-func exportDetailedCSV(pages map[string]int, baseURL, filename string) error {
+func ExportDetailedCSV(pages map[string]int, baseURL, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create detailed CSV file: %w", err)
@@ -73,7 +73,7 @@ func exportDetailedCSV(pages map[string]int, baseURL, filename string) error {
 		return fmt.Errorf("failed to write detailed CSV header: %w", err)
 	}
 
-	sortedPages := sortPages(pages)
+	sortedPages := SortPages(pages)
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 
 	// Calculate max links for relative popularity
@@ -96,9 +96,9 @@ func exportDetailedCSV(pages map[string]int, baseURL, filename string) error {
 			page.URL,
 			strconv.Itoa(page.Count),
 			relativePopularity,
-			strconv.Itoa(calculateURLDepth(page.URL)),
-			determinePageType(page.URL),
-			extractDomain(page.URL),
+			strconv.Itoa(CalculateURLDepth(page.URL)),
+			DeterminePageType(page.URL),
+			ExtractDomain(page.URL),
 			baseURL,
 			timestamp,
 		}

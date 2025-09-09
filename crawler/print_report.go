@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"fmt"
@@ -11,15 +11,15 @@ type Page struct {
 	Count int
 }
 
-// printReport prints a formatted report of the crawled pages
-func printReport(pages map[string]int, baseURL string) {
+// PrintReport prints a formatted report of the crawled pages
+func PrintReport(pages map[string]int, baseURL string) {
 	// Print report header
 	fmt.Println("=============================")
 	fmt.Printf("  REPORT for %s\n", baseURL)
 	fmt.Println("=============================")
 
 	// Sort the pages
-	sortedPages := sortPages(pages)
+	sortedPages := SortPages(pages)
 
 	// Print each page with its link count
 	for _, page := range sortedPages {
@@ -27,9 +27,9 @@ func printReport(pages map[string]int, baseURL string) {
 	}
 }
 
-// sortPages converts the map to a sorted slice
+// SortPages converts the map to a sorted slice
 // Sorted by count (highest first), then alphabetically by URL for ties
-func sortPages(pages map[string]int) []Page {
+func SortPages(pages map[string]int) []Page {
 	// Convert map to slice of Page structs
 	pageSlice := make([]Page, 0, len(pages))
 	for url, count := range pages {

@@ -1,11 +1,11 @@
-package main
+package crawler
 
 import "strings"
 
-// extractDomain extracts the domain from a given URL string. If the URL is empty, it returns an empty string.
+// ExtractDomain extracts the domain from a given URL string. If the URL is empty, it returns an empty string.
 // It iterates through the characters of the URL and returns the substring
 // up to the first '/' character. If no '/' is found, it returns the entire URL.
-func extractDomain(url string) string {
+func ExtractDomain(url string) string {
 	if len(url) == 0 {
 		return ""
 	}
@@ -18,7 +18,7 @@ func extractDomain(url string) string {
 }
 
 // CalculateURLDepth check the number of nested pages on the domain
-func calculateURLDepth(url string) int {
+func CalculateURLDepth(url string) int {
 	var depth = 0
 	for _, char := range url {
 		if char == '/' {
@@ -28,9 +28,9 @@ func calculateURLDepth(url string) int {
 	return depth
 }
 
-// Helper function to determine page type based on URL patterns
-func determinePageType(url string) string {
-	if url == extractDomain(url) {
+// DeterminePageType is a helper function to determine page type based on URL patterns
+func DeterminePageType(url string) string {
+	if url == ExtractDomain(url) {
 		return "Homepage"
 	}
 

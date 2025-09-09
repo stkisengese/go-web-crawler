@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 // GetURLsFromHTML extracts and returns all URLs from the provided HTML body.
-func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+func GetURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	// Parse the html body into a string
 	doc, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {

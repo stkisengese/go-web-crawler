@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"fmt"
@@ -9,14 +9,14 @@ import (
 	"sync"
 )
 
-// config struct holds shared state for concurrent crawling
-type config struct {
-	pages              map[string]int  // Track pages and visit counts
-	baseURL            *url.URL        // Original base URL for domain checking
-	mu                 *sync.Mutex     // Mutex for thread-safe map access
-	concurrencyControl chan struct{}   // Buffered channel to control max goroutines
-	wg                 *sync.WaitGroup // WaitGroup to wait for all goroutines to finish
-	maxPages           int             // Optional limit on number of pages to crawl
+// Config struct holds shared state for concurrent crawling
+type Config struct {
+	Pages              map[string]int  // Track pages and visit counts
+	BaseURL            *url.URL        // Original base URL for domain checking
+	Mu                 *sync.Mutex     // Mutex for thread-safe map access
+	ConcurrencyControl chan struct{}   // Buffered channel to control max goroutines
+	Wg                 *sync.WaitGroup // WaitGroup to wait for all goroutines to finish
+	MaxPages           int             // Optional limit on number of pages to crawl
 }
 
 // CrawlArgs struct holds arguments for each crawl operation
@@ -30,24 +30,24 @@ type CrawlArgs struct {
 
 // AddPageVisit safely adds or updates the visit count for a normalized
 // URL and returns whether it was the first visit.
-func (cfg *config) addPageVisit(normURL string) (isFirstVisit bool) {
-	cfg.mu.Lock()
-	defer cfg.mu.Unlock()
+func (cfg *Config) AddPageVisit(normURL string) (isFirstVisit bool) {
+	cfg.Mu.Lock()
+	defer cfg.Mu.Unlock()
 
-	if _, exists := cfg.pages[normURL]; exists {
-		cfg.pages[normURL]++
+	if _, exists := cfg.Pages[normURL]; exists {
+		cfg.Pages[normURL]++
 		return false // Not the first visit
 	}
 
-	cfg.pages[normURL] = 1
+	cfg.Pages[normURL] = 1
 	return true // First visit
 }
 
 // GetPageCount safety returns the current number of pages crawled
-func (cfg *config) getPageCount() int {
-	cfg.mu.Lock()
-	defer cfg.mu.Unlock()
-	return len(cfg.pages)
+func (cfg *Config) GetPageCount() int {
+	cfg.Mu.Lock()
+	defer cfg.Mu.Unlock()
+	return len(cfg.Pages)
 }
 
 // printUsage prints usage information
@@ -70,8 +70,8 @@ func printUsage() {
 	fmt.Println("  go run . https://example.com 5 20 --csv output.csv --detailed-csv detailed.csv")
 }
 
-// parseArgs parses command line arguments with support for CSV export
-func parseArgs() CrawlArgs {
+// ParseArgs parses command line arguments with support for CSV export
+func ParseArgs() CrawlArgs {
 	args := os.Args[1:]
 
 	if len(args) < 3 {
