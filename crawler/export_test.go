@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"encoding/csv"
@@ -36,7 +36,7 @@ func TestExtractDomain(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := extractDomain(tc.input)
+			actual := ExtractDomain(tc.input)
 			if actual != tc.expected {
 				t.Errorf("Expected %s, got %s", tc.expected, actual)
 			}
@@ -74,7 +74,7 @@ func TestCalculateURLDepth(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := calculateURLDepth(tc.input)
+			actual := CalculateURLDepth(tc.input)
 			if actual != tc.expected {
 				t.Errorf("Expected %d, got %d", tc.expected, actual)
 			}
@@ -122,7 +122,7 @@ func TestDeterminePageType(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := determinePageType(tc.input)
+			actual := DeterminePageType(tc.input)
 			if actual != tc.expected {
 				t.Errorf("Expected %s, got %s", tc.expected, actual)
 			}
@@ -145,7 +145,7 @@ func TestExportToCSV(t *testing.T) {
 	defer os.Remove(filename)
 
 	// Test CSV export
-	err := exportToCSV(pages, baseURL, filename)
+	err := ExportToCSV(pages, baseURL, filename)
 	if err != nil {
 		t.Fatalf("Failed to export CSV: %v", err)
 	}

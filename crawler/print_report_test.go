@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"reflect"
@@ -57,7 +57,7 @@ func TestSortPages(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := sortPages(tc.input)
+			actual := SortPages(tc.input)
 			if !reflect.DeepEqual(actual, tc.expected) {
 				t.Errorf("Expected %v, got %v", tc.expected, actual)
 			}

@@ -1,4 +1,4 @@
-package main
+package crawler
 
 import (
 	"strings"
@@ -40,14 +40,14 @@ func TestNormalizeURL(t *testing.T) {
 		},
 	}
 
-	for i, tc := range tests {
+	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := normalizeURL(tc.inputURL)
+			actual, err := NormalizeURL(tc.inputURL)
 			if err != nil && !strings.Contains(err.Error(), tc.errorContains) {
-				t.Errorf("Test %v - '%s' Fail: unexpected error: %v", i, tc.name, err)
+				t.Errorf("unexpected error: %v", err)
 			}
 			if actual != tc.expected {
-				t.Errorf("Test %v - '%s' Fail: expected '%s', got '%v'", i, tc.name, tc.expected, actual)
+				t.Errorf("expected %s, got %s", tc.expected, actual)
 			}
 		})
 	}
