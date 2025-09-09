@@ -7,7 +7,7 @@
 *.dll
 *.so
 *.dylib
-crawler
+# crawler
 
 # Test binary, built with `go test -c`
 *.test
